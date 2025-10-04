@@ -101,6 +101,7 @@ export async function getPointData(pointId: number) {
                 siteId: true,
                 image: {
                     select: {
+                        imageId: true,
                         title: true,
                         description: true,
                         previewImageUrl: true,
@@ -122,6 +123,7 @@ export async function getPointData(pointId: number) {
         return {
             pointId,
             siteId: point?.siteId,
+            imageId: point?.image?.imageId,
             title: point?.image?.title,
             description: point?.image?.description,
             category: point?.image?.category?.name,
@@ -132,34 +134,34 @@ export async function getPointData(pointId: number) {
     }
 }
 
-export async function getPointPhoto(pointId: number) {
+export async function getImagePhoto(imageId: number) {
     try {
-        const point = await prisma.point.findFirst({
+        const image = await prisma.image.findFirst({
             select: {
-                pointId: true,
-                image: {
-                    select: {
-                        title: true,
-                        description: true,
-                        fullImageUrl: true
-                    }
-                },
+                title: true,
+                description: true,
+                fullImageUrl: true,
             },
-            where: {
-                pointId
-            }
+            where: { imageId },
         });
 
-        const imageBase64 = point?.image?.fullImageUrl ? await parseToBase64(point.image.fullImageUrl) : null;
+        if (!image) throw new Error("Image not found");
+
+        const [signedUrl] = await storage
+            .bucket(bucketName)
+            .file(image.fullImageUrl)
+            .getSignedUrl({
+                action: "read",
+                expires: Date.now() + 60 * 60 * 1000,
+            });
 
         return {
-            pointId,
-            title: point?.image?.title,
-            description: point?.image?.description,
-            imageBase64
-        }
+            title: image.title,
+            description: image.description,
+            imageUrl: signedUrl,
+        };
     } catch {
-        return "Error to fetch point image"
+        return { error: "Error fetching image" };
     }
 }
 
