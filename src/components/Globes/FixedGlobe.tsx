@@ -2,9 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import Globe from "react-globe.gl";
-import type { GlobeMethods } from "react-globe.gl";
 
-export default function FixedGlobe({ globeImg, site }: { globeImg: string; site: string }) {
+import type { GlobeMethods } from "react-globe.gl";
+import type { IFixedGlobe } from "@/types/Components";
+
+export default function FixedGlobe({ globeImg, site }: IFixedGlobe) {
     const globeRef = useRef<GlobeMethods | null>(null);
 
     useEffect(() => {

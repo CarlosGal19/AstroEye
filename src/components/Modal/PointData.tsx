@@ -1,8 +1,8 @@
-import { IGetPoint, IGetPointData } from "@/types/catalogs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { IPointData } from "@/types/Components";
 
-export default function PointData({ pointData, setPointData, setSelectedPoint }: { pointData: IGetPointData; setPointData: (data: IGetPointData | null) => void; setSelectedPoint: (pointId: IGetPoint | null) => void }) {
+export default function PointData({ pointData, setPointData, setSelectedPoint }: IPointData) {
 
     const router = useRouter();
 

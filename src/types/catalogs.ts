@@ -22,7 +22,7 @@ export interface IGetPointData {
 }
 
 export interface IGetImageData {
-    title: string;
-    description: string;
-    imageUrl: string;
+    title?: string;
+    description?: string;
+    imageUrl?: string;
 }
