@@ -7,7 +7,8 @@ export async function getSites() {
         const sites = await prisma.site.findMany({
             select: {
                 siteId: true,
-                name: true
+                name: true,
+                imageUrl: true
             }
         })
 
