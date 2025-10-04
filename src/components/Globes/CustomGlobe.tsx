@@ -1,12 +1,15 @@
 "use client";
 
 import { IGetPoint } from "@/types/catalogs";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
 import type { GlobeMethods } from "react-globe.gl";
+import PointData from "../Modal/PointData";
 
 export default function CustomGlobe({ imageUrl, points }: { imageUrl: string, points: IGetPoint[] }) {
     const globeRef = useRef<GlobeMethods | null>(null);
+    const [selectedPoint, setSelectedPoint] = useState<IGetPoint | null>(null);
+    const [pointData, setPointData] = useState<any>(null);
 
     useEffect(() => {
         if (!globeRef.current) return;
@@ -14,18 +17,25 @@ export default function CustomGlobe({ imageUrl, points }: { imageUrl: string, po
         const controls = globeRef.current.controls();
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.25;
-
     }, []);
 
-    const elegantColors = ['#4B2E3A', '#1A1F71', '#2F4F4F', '#3B0A45', '#264653'];
+    const colorOptions = ['#4B2E3A', '#1A1F71', '#2F4F4F', '#3B0A45', '#264653'];
 
     const mappedPoints = points.map(p => ({
         ...p,
         imageTitle: p.imageTitle,
         lat: p.pointLat,
         lng: p.pointLng,
-        color: elegantColors[Math.floor(Math.random() * elegantColors.length)]
+        color: colorOptions[Math.floor(Math.random() * colorOptions.length)]
     }));
+
+    const handlePointClick = async (point: any) => {
+        setSelectedPoint(point);
+
+        const res = await fetch(`/api/pointData?pointId=${point.pointId}`);
+        const data = await res.json();
+        setPointData(data);
+    };
 
     return (
         <div className="overflow-hidden w-full h-11/12">
@@ -40,7 +50,13 @@ export default function CustomGlobe({ imageUrl, points }: { imageUrl: string, po
                 pointResolution={16}
                 pointsTransitionDuration={500}
                 pointLabel="imageTitle"
+                onPointClick={handlePointClick}
             />
+
+            {selectedPoint && pointData && (
+                <PointData pointData={pointData} setPointData={setPointData} setSelectedPoint={setSelectedPoint} />
+            )}
+
         </div>
     );
 }
