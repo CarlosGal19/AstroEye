@@ -3,7 +3,8 @@ import { IGetImageData } from "@/types/catalogs";
 
 import ImageViewer from "@/components/Visualizer/Visualizer";
 
-export default async function Visualizer({params}: {params: {imageId: string}}) {
+export default async function Visualizer(props: {params: Promise<{imageId: string}>}) {
+    const params = await props.params;
     const imageId = await Number(params.imageId);
 
     const imageData: IGetImageData = await getImagePhoto(imageId);
@@ -11,5 +12,4 @@ export default async function Visualizer({params}: {params: {imageId: string}}) 
     return (
         <ImageViewer imageData={imageData} />
     );
-
 }
