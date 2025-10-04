@@ -13,29 +13,32 @@ const storage = new Storage({
 
 const bucketName = "bucket_astro_eye";
 
+async function parseToBase64(filePath: string): Promise<string> {
+    const file = storage.bucket(bucketName).file(filePath);
+    const [buffer] = await file.download();
+
+    const ext = filePath.split(".").pop()?.toLowerCase();
+    const mime = ext === "png" ? "image/png" : "image/jpeg";
+    return `data:${mime};base64,${buffer.toString("base64")}`;
+}
+
 export async function getSites(): Promise<IGetSite[]> {
     const sites = await prisma.site.findMany({
         select: {
             siteId: true,
             name: true,
-            imageUrl: true, // ruta dentro del bucket
+            imageUrl: true,
         },
     });
 
     const sitesWithBase64 = await Promise.all(
         sites.map(async (site) => {
-            const file = storage.bucket(bucketName).file(site.imageUrl);
-            const [buffer] = await file.download();
-
-            const ext = site.imageUrl.split(".").pop()?.toLowerCase();
-            const mime = ext === "png" ? "image/png" : "image/jpeg";
-
-            const base64 = buffer.toString("base64");
+            const base64 = await parseToBase64(site.imageUrl);
 
             return {
                 siteId: site.siteId,
                 name: site.name,
-                imageUrl: `data:${mime};base64,${base64}`,
+                imageUrl: base64,
             };
         })
     );
@@ -53,13 +56,7 @@ export async function getSiteData(siteId: number) {
 
     if (!site) return null;
 
-    const file = storage.bucket(bucketName).file(site.imageUrl);
-    const [buffer] = await file.download();
-
-    const ext = site.imageUrl.split(".").pop()?.toLowerCase();
-    const mime = ext === "png" ? "image/png" : "image/jpeg";
-
-    const imageBase64 = `data:${mime};base64,${buffer.toString("base64")}`;
+    const imageBase64 = await parseToBase64(site.imageUrl);
 
     return {
         name: site.name,
@@ -100,6 +97,7 @@ export async function getPointData(pointId: number) {
     try {
         const point = await prisma.point.findFirst({
             select: {
+                pointId: true,
                 siteId: true,
                 image: {
                     select: {
@@ -119,7 +117,16 @@ export async function getPointData(pointId: number) {
             }
         })
 
-        return point;
+        const imageBase64 = point?.image?.previewImageUrl ? await parseToBase64(point.image.previewImageUrl) : null;
+
+        return {
+            pointId,
+            siteId: point?.siteId,
+            title: point?.image?.title,
+            description: point?.image?.description,
+            category: point?.image?.category?.name,
+            imageBase64
+        }
     } catch {
         return "Error to fetch point data"
     }
@@ -141,9 +148,16 @@ export async function getPointPhoto(pointId: number) {
             where: {
                 pointId
             }
-        })
+        });
 
-        return point;
+        const imageBase64 = point?.image?.fullImageUrl ? await parseToBase64(point.image.fullImageUrl) : null;
+
+        return {
+            pointId,
+            title: point?.image?.title,
+            description: point?.image?.description,
+            imageBase64
+        }
     } catch {
         return "Error to fetch point image"
     }
@@ -184,7 +198,19 @@ export async function getImagesByCategory(pageNumber: number = 1, categoryId?: n
             skip: 15 * (pageNumber - 1)
         })
 
-        return images;
+        const imagesWithBase64 = await Promise.all(
+            images.map(async (img) => {
+                const base64 = img.previewImageUrl ? await parseToBase64(img.previewImageUrl) : null;
+                return {
+                    imageId: img.imageId,
+                    title: img.title,
+                    previewImageUrl: img.previewImageUrl,
+                    base64
+                }
+            })
+        );
+
+        return imagesWithBase64;
     } catch {
         return "Error to get images";
     }
