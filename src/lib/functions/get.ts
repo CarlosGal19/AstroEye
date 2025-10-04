@@ -2,6 +2,21 @@ import { PrismaClient } from "../generated";
 
 const prisma = new PrismaClient();
 
+export async function getSites() {
+    try {
+        const sites = await prisma.site.findMany({
+            select: {
+                siteId: true,
+                name: true
+            }
+        })
+
+        return sites
+    } catch {
+        return "Error to get sites"
+    }
+}
+
 export async function getPointsBySite(siteId: number) {
     try {
         const points = await prisma.point.findMany({
@@ -32,14 +47,18 @@ export async function getPointData(pointId: number) {
         const point = await prisma.point.findFirst({
             select: {
                 siteId: true,
-                title: true,
-                description: true,
-                previewImageUrl: true,
-                category: {
+                image: {
                     select: {
-                        name: true
+                        title: true,
+                        description: true,
+                        previewImageUrl: true,
+                        category: {
+                            select: {
+                                name: true
+                            }
+                        }
                     }
-                }
+                },
             },
             where: {
                 pointId
@@ -57,9 +76,13 @@ export async function getPointPhoto(pointId: number) {
         const point = await prisma.point.findFirst({
             select: {
                 pointId: true,
-                title: true,
-                fullImageUrl: true,
-                description: true
+                image: {
+                    select: {
+                        title: true,
+                        description: true,
+                        fullImageUrl: true
+                    }
+                },
             },
             where: {
                 pointId
@@ -87,19 +110,14 @@ export async function getCategories() {
     }
 }
 
-export async function getPointsByCategory(pageNumber: number = 1, categoryId?: number | null) {
+export async function getImagesByCategory(pageNumber: number = 1, categoryId?: number | null) {
     try {
-        const points = await prisma.point.findMany({
+        const images = await prisma.image.findMany({
             select: {
-                pointId: true,
+                imageId: true,
                 title: true,
                 previewImageUrl: true,
                 category: {
-                    select: {
-                        name: true
-                    }
-                },
-                site: {
                     select: {
                         name: true
                     }
@@ -110,10 +128,10 @@ export async function getPointsByCategory(pageNumber: number = 1, categoryId?: n
                 : {},
             take: 15,
             skip: 15 * (pageNumber - 1)
-        });
+        })
 
-        return points;
+        return images;
     } catch {
-        return "Error to get points";
+        return "Error to get images";
     }
 }

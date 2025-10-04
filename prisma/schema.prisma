@@ -15,9 +15,10 @@ datasource db {
 }
 
 model Site {
-  siteId           Int         @id @default(autoincrement())  @map("site_id")
+  siteId           Int         @id @default(autoincrement())        @map("site_id")
   name             String
-  createdAt        DateTime    @default(now())                @map("created_at")
+  imageUrl         String                                           @map("image_url")
+  createdAt        DateTime    @default(now())                      @map("created_at")
 
   points            Point[]
 
@@ -25,30 +26,42 @@ model Site {
 }
 
 model Category {
-  categoryId        Int         @id @default(autoincrement()) @map("category_id")
+  categoryId        Int         @id @default(autoincrement())       @map("category_id")
   name              String
-  createdAt         DateTime    @default(now())               @map("created_at")
+  createdAt         DateTime    @default(now())                     @map("created_at")
 
-  points            Point[]
+  images            Image[]
 
   @@map("category")
 }
 
-model Point {
-  pointId           Int         @id @default(autoincrement()) @map("point_id")
-  siteId            Int                                       @map("site_id")
-  previewImageUrl   String                                    @map("preview_image_url")
-  fullImageUrl      String                                    @map("full_image_url")
+model Image {
+  imageId           Int         @id @default(autoincrement())       @map("image_id")
+  previewImageUrl   String      @map("preview_image_url")
+  fullImageUrl      String      @map("full_image_url")
   title             String
   description       String      @db.Text
-  categoryId        Int                                       @map("category_id")
+  aiDescription     String      @db.Text
+  categoryId        Int                                             @map("category_id")
+  pointId           Int?        @unique @map("point_id")
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  category          Category    @relation(fields: [categoryId], references: [categoryId])
+  point             Point?      @relation(fields: [pointId], references: [pointId])
+
+  @@map("image")
+}
+
+model Point {
+  pointId           Int         @id @default(autoincrement())       @map("point_id")
+  siteId            Int         @map("site_id")
   latitude          Decimal     @db.Decimal(10,8)
   longitude         Decimal     @db.Decimal(11,8)
-  aiDescription     String      @db.Text                              @map("ai_description")
-  createdAt         DateTime    @default(now())
+  createdAt         DateTime    @default(now()) @map("created_at")
 
   site              Site        @relation(fields: [siteId], references: [siteId])
-  category          Category    @relation(fields: [categoryId], references: [categoryId])
+  image             Image?
 
   @@map("point")
 }
+
