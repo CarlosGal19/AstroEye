@@ -73,7 +73,12 @@ export async function getPointsBySite(siteId: number) {
             select: {
                 pointId: true,
                 longitude: true,
-                latitude: true
+                latitude: true,
+                image: {
+                    select: {
+                        title: true,
+                    }
+                }
             },
             where: {
                 siteId
@@ -82,10 +87,9 @@ export async function getPointsBySite(siteId: number) {
 
         return points.map(p => ({
             pointId: p.pointId,
-            location: {
-                lat: p.latitude,
-                lng: p.longitude
-            }
+            pointLat: Number(p.latitude),
+            pointLng: Number(p.longitude),
+            imageTitle: p.image?.title
         }));
     } catch {
         return "Error to fetch points";

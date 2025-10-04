@@ -3,3 +3,10 @@ export interface IGetSite {
     name: string;
     imageUrl: string;
 }
+
+export interface IGetPoint {
+    pointId: number;
+    pointLat: number;
+    pointLng: number;
+    imageTitle?: string;
+}
