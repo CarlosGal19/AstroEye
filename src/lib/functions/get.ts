@@ -42,6 +42,31 @@ export async function getSites(): Promise<IGetSite[]> {
     return sitesWithBase64;
 }
 
+export async function getSiteData(siteId: number) {
+    const site = await prisma.site.findFirst({
+        select: {
+            name: true,
+            imageUrl: true,
+        },
+        where: { siteId },
+    });
+
+    if (!site) return null;
+
+    const file = storage.bucket(bucketName).file(site.imageUrl);
+    const [buffer] = await file.download();
+
+    const ext = site.imageUrl.split(".").pop()?.toLowerCase();
+    const mime = ext === "png" ? "image/png" : "image/jpeg";
+
+    const imageBase64 = `data:${mime};base64,${buffer.toString("base64")}`;
+
+    return {
+        name: site.name,
+        imageBase64,
+    };
+}
+
 export async function getPointsBySite(siteId: number) {
     try {
         const points = await prisma.point.findMany({
