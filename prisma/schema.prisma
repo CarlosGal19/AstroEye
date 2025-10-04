@@ -6,10 +6,49 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../src/lib/generated"
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Site {
+  siteId           Int         @id @default(autoincrement())  @map("site_id")
+  name             String
+  createdAt        DateTime    @default(now())                @map("created_at")
+
+  points            Point[]
+
+  @@map("site")
+}
+
+model Category {
+  categoryId        Int         @id @default(autoincrement()) @map("category_id")
+  name              String
+  createdAt         DateTime    @default(now())               @map("created_at")
+
+  points            Point[]
+
+  @@map("category")
+}
+
+model Point {
+  pointId           Int         @id @default(autoincrement()) @map("point_id")
+  siteId            Int                                       @map("site_id")
+  previewImageUrl   String                                    @map("preview_image_url")
+  fullImageUrl      String                                    @map("full_image_url")
+  title             String
+  description       String      @db.Text
+  categoryId        Int                                       @map("category_id")
+  latitude          Decimal     @db.Decimal(10,8)
+  longitude         Decimal     @db.Decimal(11,8)
+  aiDescription     String      @db.Text                              @map("ai_description")
+  createdAt         DateTime    @default(now())
+
+  site              Site        @relation(fields: [siteId], references: [siteId])
+  category          Category    @relation(fields: [categoryId], references: [categoryId])
+
+  @@map("point")
 }
