@@ -1,6 +1,6 @@
 "use client";
 
-import { IGetPoint } from "@/types/catalogs";
+import { IGetPoint, IGetPointData } from "@/types/catalogs";
 import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
 import type { GlobeMethods } from "react-globe.gl";
@@ -9,7 +9,7 @@ import PointData from "../Modal/PointData";
 export default function CustomGlobe({ imageUrl, points }: { imageUrl: string, points: IGetPoint[] }) {
     const globeRef = useRef<GlobeMethods | null>(null);
     const [selectedPoint, setSelectedPoint] = useState<IGetPoint | null>(null);
-    const [pointData, setPointData] = useState<any>(null);
+    const [pointData, setPointData] = useState<IGetPointData | null>(null);
 
     useEffect(() => {
         if (!globeRef.current) return;
@@ -33,7 +33,7 @@ export default function CustomGlobe({ imageUrl, points }: { imageUrl: string, po
         setSelectedPoint(point);
 
         const res = await fetch(`/api/pointData?pointId=${point.pointId}`);
-        const data = await res.json();
+        const data: IGetPointData = await res.json();
         setPointData(data);
     };
 

@@ -1,7 +1,11 @@
-import { IGetPoint } from "@/types/catalogs";
+import { IGetPoint, IGetPointData } from "@/types/catalogs";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-export default function PointData({ pointData, setPointData, setSelectedPoint }: { pointData: any; setPointData: (data: any) => void; setSelectedPoint: (pointId: IGetPoint | null) => void }) {
+export default function PointData({ pointData, setPointData, setSelectedPoint }: { pointData: IGetPointData; setPointData: (data: IGetPointData | null) => void; setSelectedPoint: (pointId: IGetPoint | null) => void }) {
+
+    const router = useRouter();
+
     return (
         <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg w-[70%] h-[70%] flex overflow-hidden shadow-lg">
@@ -10,7 +14,7 @@ export default function PointData({ pointData, setPointData, setSelectedPoint }:
                     <div className="w-1/2 h-full">
                         <Image
                             src={pointData.imageBase64}
-                            alt={pointData.title}
+                            alt={pointData.title || 'Point Image'}
                             className="w-full h-full object-cover"
                             width={600}
                             height={600}
@@ -29,7 +33,7 @@ export default function PointData({ pointData, setPointData, setSelectedPoint }:
                     <div className="flex justify-end gap-4 mt-4">
                         <button
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                            onClick={() => console.log('Open visualizer')}
+                            onClick={() => router.push(`/visualizer/${pointData.imageId}`)}
                         >
                             Open Visualizer
                         </button>
