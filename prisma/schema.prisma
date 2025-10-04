@@ -41,7 +41,7 @@ model Image {
   fullImageUrl      String      @map("full_image_url")
   title             String
   description       String      @db.Text
-  aiDescription     String      @db.Text
+  aiDescription     String?     @db.Text
   categoryId        Int                                             @map("category_id")
   pointId           Int?        @unique @map("point_id")
   createdAt         DateTime    @default(now()) @map("created_at")
