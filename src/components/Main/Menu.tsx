@@ -12,7 +12,7 @@ export default function Menu({sites}: {sites: IGetSite[]}) {
     return (
         <main className="h-full flex flex-col items-center justify-center relative">
 
-            <h1 className="text-6xl text-center m-12">Choose an option for starting</h1>
+            <h1 className="text-6xl text-[#ededed] text-center m-12">Choose an option for starting</h1>
             <div className="w-full h-5/6 overflow-hidden flex justify-evenly items-center">
                 {sites.map((globe) => (
                     <div

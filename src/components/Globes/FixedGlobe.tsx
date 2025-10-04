@@ -43,7 +43,7 @@ export default function FixedGlobe({ globeImg, site }: { globeImg: string; site:
                     height={400}
                 />
             </div>
-            <h2 className="text-2xl text-center">{site} taken photos</h2>
+            <h2 className="text-2xl text-[#ededed] text-center">{site} taken photos</h2>
         </div>
     );
 }
