@@ -1,0 +1,22 @@
+export const astronomyFacts: string[] = [
+  "The Sun is not yellow: although we see it that way from Earth, it actually emits white light.",
+  "The most massive stars can live only a few million years, while the smallest can shine for trillions of years.",
+  "Sound does not travel in space; stars and planets do not 'make noise' like on Earth.",
+  "Some planets orbit two stars, called circumbinary planets, like Tatooine in Star Wars.",
+  "Cosmic dust between stars can form nebulae that give birth to new stars and planetary systems.",
+  "Some stars explode in supernovae, releasing elements like gold and platinum into space.",
+  "The closest star to us after the Sun is Proxima Centauri, over 4 light-years away.",
+  "Black holes do not 'suck' everything around them; they only affect objects very close to their event horizon.",
+  "Some stars spin so fast that they become deformed, taking an egg-like shape instead of a perfect sphere.",
+  "The observable universe contains over 2 trillion galaxies, each with millions or billions of stars.",
+  "A day on Venus is longer than a year on Venus, because it rotates more slowly on its axis than it orbits the Sun.",
+  "Neutron stars are so dense that a teaspoon of their matter would weigh billions of tons on Earth.",
+  "Saturn could float in water because its average density is lower than that of liquid water.",
+  "Jupiter's Great Red Spot is a storm that has been raging for at least 350 years.",
+  "If you could travel at the speed of light, it would still take over 100,000 years to cross the Milky Way galaxy.",
+  "On Mars, sunsets appear blue due to the way its atmosphere scatters sunlight.",
+  "There are more stars in the universe than grains of sand on all the beaches on Earth.",
+  "A year on Mercury is just 88 Earth days, but a day on Mercury lasts 176 Earth days.",
+  "The Hubble Space Telescope can see galaxies that are billions of light-years away.",
+  "Astronauts grow up to 2 inches taller in space because of the lack of gravity compressing their spines."
+];
