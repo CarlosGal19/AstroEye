@@ -1,21 +1,45 @@
+import { IGetSite } from "@/types/catalogs";
+
 import { PrismaClient } from "../generated";
+
+import { Storage } from "@google-cloud/storage";
+import path from "path";
 
 const prisma = new PrismaClient();
 
-export async function getSites() {
-    try {
-        const sites = await prisma.site.findMany({
-            select: {
-                siteId: true,
-                name: true,
-                imageUrl: true
-            }
-        })
+const storage = new Storage({
+    keyFilename: path.join(process.cwd(), "gcp-key.json"),
+});
 
-        return sites
-    } catch {
-        return "Error to get sites"
-    }
+const bucketName = "bucket_astro_eye";
+
+export async function getSites(): Promise<IGetSite[]> {
+    const sites = await prisma.site.findMany({
+        select: {
+            siteId: true,
+            name: true,
+            imageUrl: true, // ruta dentro del bucket
+        },
+    });
+
+    const sitesWithBase64 = await Promise.all(
+        sites.map(async (site) => {
+            const file = storage.bucket(bucketName).file(site.imageUrl);
+            const [buffer] = await file.download();
+
+            const ext = site.imageUrl.split(".").pop()?.toLowerCase();
+            const mime = ext === "png" ? "image/png" : "image/jpeg";
+
+            const base64 = buffer.toString("base64");
+
+            return {
+                siteId: site.siteId,
+                name: site.name,
+                imageUrl: `data:${mime};base64,${base64}`,
+            };
+        })
+    );
+    return sitesWithBase64;
 }
 
 export async function getPointsBySite(siteId: number) {
