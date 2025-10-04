@@ -1,45 +1,12 @@
-"use client";
-
-import FixedGlobe from "@/components/FixedGlobe";
+import { getSites } from "@/lib/functions/get";
 import { IGetSite } from "@/types/catalogs";
-import { useEffect, useState } from "react";
+import Menu from "@/components/Main/Menu";
 
-export default function Menu() {
+export default async function Page() {
 
-    const [globes, setGlobes] = useState<IGetSite[]>([]);
-
-    useEffect(() => {
-        async function fetchSites() {
-            try {
-                const data = await fetch("/api/sites");
-                const fetchedGlobes = await data.json();
-                setGlobes(fetchedGlobes);
-            } catch (error) {
-                alert(error);
-            }
-        }
-
-        fetchSites();
-    }, []);
+    const globes: IGetSite[] = await getSites();
 
     return (
-        <main className="h-full flex flex-col items-center justify-center relative">
-
-            <h1 className="text-6xl text-center m-12">Choose an option for starting</h1>
-            <div className="w-full h-5/6 overflow-hidden flex justify-evenly items-center">
-                {globes.map((globe) => (
-                    <div
-                        key={globe.siteId}
-                        className={`
-                  flex flex-col items-center w-1/5
-                  transform transition-all duration-700
-                  cursor-pointer
-                `}
-                    >
-                        <FixedGlobe globeImg={globe.imageUrl} site={globe.name} />
-                    </div>
-                ))}
-            </div>
-        </main>
+        <Menu sites={globes} />
     );
 }
