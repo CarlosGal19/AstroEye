@@ -147,18 +147,10 @@ export async function getImagePhoto(imageId: number) {
 
         if (!image) throw new Error("Image not found");
 
-        const [signedUrl] = await storage
-            .bucket(bucketName)
-            .file(image.fullImageUrl)
-            .getSignedUrl({
-                action: "read",
-                expires: Date.now() + 60 * 60 * 1000,
-            });
-
         return {
             title: image.title,
             description: image.description,
-            imageUrl: signedUrl,
+            imageUrl: `${process.env.BUCKET_URL}${image.fullImageUrl}`,
         };
     } catch {
         return { error: "Error fetching image" };
