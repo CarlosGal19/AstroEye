@@ -10,6 +10,6 @@ export default async function Visualizer(props: {params: Promise<{imageId: strin
     const imageData: IGetImageData = await getImagePhoto(imageId);
 
     return (
-        <ImageViewer imageData={imageData} />
+        <ImageViewer title={imageData.title} description={imageData.description} imageUrl={imageData.imageUrl} />
     );
 }
