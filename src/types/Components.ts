@@ -15,3 +15,11 @@ export interface IPointData {
     setPointData: (data: IGetPointData | null) => void;
     setSelectedPoint: (pointId: IGetPoint | null) => void;
 }
+
+export interface IImageCard {
+  image: {
+    imageId: string | number;
+    title: string;
+    base64: string;
+  };
+}

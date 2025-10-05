@@ -26,3 +26,8 @@ export interface IGetImageData {
     description?: string;
     imageUrl?: string;
 }
+
+export interface IGetCategories {
+    categoryId: number;
+    name: string
+}
