@@ -1,5 +1,3 @@
-import { IGetSite } from "@/types/catalogs";
-
 import { PrismaClient } from "../generated";
 
 import { Storage } from "@google-cloud/storage";
@@ -13,16 +11,20 @@ const storage = new Storage({
 
 const bucketName = "bucket_astro_eye";
 
-async function parseToBase64(filePath: string): Promise<string> {
-    const file = storage.bucket(bucketName).file(filePath);
-    const [buffer] = await file.download();
+async function parseToBase64(filePath: string) {
+    try {
+        const file = storage.bucket(bucketName).file(filePath);
+        const [buffer] = await file.download();
 
-    const ext = filePath.split(".").pop()?.toLowerCase();
-    const mime = ext === "png" ? "image/png" : "image/jpeg";
-    return `data:${mime};base64,${buffer.toString("base64")}`;
+        const ext = filePath.split(".").pop()?.toLowerCase();
+        const mime = ext === "png" ? "image/png" : "image/jpeg";
+        return `data:${mime};base64,${buffer.toString("base64")}`;
+    } catch (error) {
+        console.log(error)
+    }
 }
 
-export async function getSites(): Promise<IGetSite[]> {
+export async function getSites() {
     const sites = await prisma.site.findMany({
         select: {
             siteId: true,
@@ -198,7 +200,6 @@ export async function getImagesByCategory(pageNumber: number = 1, categoryId?: n
                 return {
                     imageId: img.imageId,
                     title: img.title,
-                    previewImageUrl: img.previewImageUrl,
                     base64
                 }
             })

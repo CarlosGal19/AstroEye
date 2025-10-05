@@ -23,22 +23,34 @@ export const config = {
 
 export async function uploadImage(req: NextRequest) {
     const formData = await req.formData();
-    const file = formData.get("image") as File;
+    const file = formData.get("file") as File;
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
-    const categoryId =  Number(formData.get("categoryId"));
+    const categoryId = Number(formData.get("categoryId"));
 
-    const fileName = file.name.split('.')[0];
+
+    const fileName = file.name.split('.')[0]
+    const format = file.name.split('.')[1]
+
+    await prisma.image.create({
+        data: {
+            previewImageUrl: `images/${fileName}/resized.${format}`,
+            fullImageUrl: `images/${fileName}/${fileName}_dzi/output.dzi`,
+            title,
+            description,
+            categoryId
+        }
+    })
 
     const bufferData = Buffer.from(await file.arrayBuffer());
 
-    await bucket.file(`images/fileName/full.jpg`).save(bufferData, {
+    await bucket.file(`images/${fileName}/full.jpg`).save(bufferData, {
         resumable: false,
         contentType: 'image/jpeg',
     });
 
     const resizedBuffer = await sharp(bufferData).resize({ width: 384 }).jpeg({ quality: 100 }).toBuffer();
-    await bucket.file(`images/${fileName}/resized.jpg`).save(resizedBuffer, {
+    await bucket.file(`images/${fileName}/resized.${format}`).save(resizedBuffer, {
         resumable: false,
         contentType: 'image/jpeg'
     })
@@ -78,15 +90,4 @@ export async function uploadImage(req: NextRequest) {
             await bucket.upload(folderPath, { destination, resumable: false, contentType: 'application/xml' });
         }
     }
-
-    await prisma.image.create({
-        data: {
-            previewImageUrl: `images/${fileName}/resized.jpeg`,
-            fullImageUrl: `images/${fileName}/full.jpeg`,
-            title,
-            description,
-            categoryId
-        }
-    })
-
 }
