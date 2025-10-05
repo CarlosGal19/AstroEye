@@ -20,7 +20,7 @@ export default function ImageViewer({ title, description, imageUrl }: IGetImageD
         });
 
         return () => viewer.destroy();
-    }, []);
+    }, [imageUrl]);
 
     return (
         <div
